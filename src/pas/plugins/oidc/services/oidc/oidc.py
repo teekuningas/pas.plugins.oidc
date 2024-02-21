@@ -154,8 +154,9 @@ class LogoutGet(LoginOIDC):
         # end_req = client.construct_EndSessionRequest(request_args=args)
         end_req = EndSessionRequest(**args)
         logout_url = end_req.request(client.end_session_endpoint)
-        self.request.response.expireCookie(auth_cookie_name, path="/")
-        self.request.response.expireCookie("auth_token", path="/")
+        path = plugin.getProperty("cookie_path") or "/"
+        self.request.response.expireCookie(auth_cookie_name, path=path)
+        self.request.response.expireCookie("auth_token", path=path)
         return {
             "next_url": logout_url,
             "came_from": redirect_uri,

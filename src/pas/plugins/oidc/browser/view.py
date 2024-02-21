@@ -108,9 +108,9 @@ class LogoutView(BrowserView):
         end_req = EndSessionRequest(**args)
         logout_url = end_req.request(client.end_session_endpoint)
         self.request.response.setHeader("Cache-Control", "no-cache, must-revalidate")
-        # TODO: change path with portal_path
-        self.request.response.expireCookie(auth_cookie_name, path="/")
-        self.request.response.expireCookie("auth_token", path="/")
+        path = self.context.getProperty("cookie_path") or "/"
+        self.request.response.expireCookie(auth_cookie_name, path=path)
+        self.request.response.expireCookie("auth_token", path=path)
         self.request.response.redirect(logout_url)
         return
 

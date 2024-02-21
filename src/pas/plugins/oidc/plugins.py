@@ -68,6 +68,7 @@ class OIDCPlugin(BasePlugin):
     use_deprecated_redirect_uri_for_logout = False
     use_modified_openid_schema = False
     user_property_as_userid = "sub"
+    cookie_path = "/"
 
     _properties = (
         dict(id="issuer", type="string", mode="w", label="OIDC/Oauth2 Issuer"),
@@ -134,6 +135,12 @@ class OIDCPlugin(BasePlugin):
             type="string",
             mode="w",
             label="User info property used as userid, default 'sub'",
+        ),
+        dict(
+            id="cookie_path",
+            type="string",
+            mode="w",
+            label="Cookie path",
         ),
     )
 
@@ -292,8 +299,9 @@ class OIDCPlugin(BasePlugin):
             token = plugin.create_token(user.getId(), data=payload)
             request = self.REQUEST
             response = request["RESPONSE"]
-            # TODO: take care of path, cookiename and domain options ?
-            response.setCookie("auth_token", token, path="/")
+            # TODO: take care of cookiename and domain options ?
+            path = self.getProperty("cookie_path") or "/"
+            response.setCookie("auth_token", token, path=path)
 
     # TODO: memoize (?)
     def get_oauth2_client(self):
